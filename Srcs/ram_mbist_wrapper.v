@@ -15,7 +15,12 @@ module ram_mbist_wrapper #(
     output wire                    bist_fail,
     output wire [ADDR_WIDTH-1:0]   fail_addr,
     output wire [DATA_WIDTH-1:0]   actual_data,
-    output wire [DATA_WIDTH-1:0]   expected_data
+
+    // test-only fault injection (tie to 0 for healthy RAM)
+    input  wire                    fault_en,
+    input  wire [ADDR_WIDTH-1:0]   fault_addr_in,
+    input  wire [2:0]              fault_bit,
+    input  wire [1:0]              fault_type
 );
 
     wire                    bist_we;
@@ -37,7 +42,11 @@ module ram_mbist_wrapper #(
         .ram_we(ram_we),
         .ram_addr(ram_addr),
         .ram_din(ram_din),
-        .ram_dout(ram_dout)
+        .ram_dout(ram_dout),
+        .fault_en(fault_en),
+        .fault_addr(fault_addr_in),
+        .fault_bit(fault_bit),
+        .fault_type(fault_type)
     );
 
     mbist_controller #(
@@ -54,7 +63,6 @@ module ram_mbist_wrapper #(
         .bist_finish(bist_finish),
         .bist_fail(bist_fail),
         .fail_addr(fail_addr),
-        .actual_data(actual_data),
-        .expected_data(expected_data)
+        .actual_data(actual_data)
     );  
 endmodule
